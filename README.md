@@ -3,8 +3,8 @@
 An embedded memory game inspired by *Simon Says*, built using the MSP430FR6989 microcontroller.
 
 ### 🎬 Demo
-Watch a short demo of the game in action: 
-[![Watch the video](https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+Watch a short demo of the game in action:   
+[![Watch the video](https://youtube.com/shorts/agX9S0J-z0U?si=qIFZzG6P21e_bzye)]
 
 ## 🧑‍💻 Authors
 Hanna Szalai
