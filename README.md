@@ -7,7 +7,7 @@ Watch a short demo of the game in action:
 [![Watch the video](https://img.youtube.com/vi/agX9S0J-z0U/0.jpg)](https://youtube.com/shorts/agX9S0J-z0U?si=qIFZzG6P21e_bzye)
 
 ## 🧑‍💻 Authors
-Hanna Szalai
+Hanna Szalai  
 Haroun Riahi
 
 ## 🧠 Gameplay Overview
