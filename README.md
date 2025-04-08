@@ -2,8 +2,13 @@
 
 An embedded memory game inspired by *Simon Says*, built using the MSP430FR6989 microcontroller.
 
-### Demo
-Watch a short demo of the game in action: [YouTube Demo](https://youtube.com/shorts/agX9S0J-z0U?si=_fyAcrt5aVOaUKk_)
+### 🎬 Demo
+Watch a short demo of the game in action: 
+[![Watch the video](https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+
+## 🧑‍💻 Authors
+Hanna Szalai
+Haroun Riahi
 
 ## 🧠 Gameplay Overview
 Players must memorize and replicate a growing sequence of red and green LED blinks using two buttons. Each round increases difficulty by extending the sequence.
