@@ -7,26 +7,32 @@ Watch a short demo of the game in action:
 [![Watch the video](https://img.youtube.com/vi/agX9S0J-z0U/0.jpg)](https://youtube.com/shorts/agX9S0J-z0U?si=qIFZzG6P21e_bzye)
 
 ## 🧑‍💻 Authors
-Hanna Szalai
-Haroun Riahi
+Hanna Szalai  
 
 ## 🧠 Gameplay Overview
-Players must memorize and replicate a growing sequence of red and green LED blinks using two buttons. Each round increases difficulty by extending the sequence.
+Players must memorize and replicate a growing sequence of red and green LED blinks using two buttons. Each round increases difficulty by extending the sequence. And with feedback provided on an LCD screen and over UART.
 
 ### Features
 - LED feedback (Red & Green)
 - LCD screen display (scrolling, number & word output)
 - Two-button input with debounce logic
 - Random pattern generation using hardware timer
-- Up to **50 rounds** of increasing difficulty
+- UART terminal output (P3.4/P3.5) for debug/monitoring
+- Up to **16 rounds** of increasing difficulty
+- Interrupt-driven design for responsive gameplay
 - Game over + score display
 
 ## 🛠 Built With
-- C & DriverLib
+- Embedded C & DriverLib
 - Code Composer Studio (CCS)
 - MSP430FR6989 (TI LaunchPad)
-- LCD_C Driver
-- Timer_A and GPIO interrupts
+- LLCD_C, Timer_A, GPIO, UART drivers
+- Modular codebase:
+    - main.c – game logic & main loop
+    - lcdDisplay.c/h – full LCD rendering engine
+    - gpioSetup.c/h – LED/button config
+    - clockConfig.c/h – oscillator setup
+    - uartPrint – basic UART support
 
 ## 🚀 Getting Started
 
@@ -35,6 +41,7 @@ Players must memorize and replicate a growing sequence of red and green LED blin
 - Code Composer Studio
 - USB Debug Interface
 - External power supply (optional)
+- Optional: UART terminal (e.g. PuTTY) for serial monitoring
 
 ### To Run
 1. Clone the repo:
@@ -68,3 +75,7 @@ Players must memorize and replicate a growing sequence of red and green LED blin
 7. Play the game:
    - Follow the LED sequence and use the buttons to replicate it.
    - Enjoy the game!
+
+## 🙌 Acknowledgments
+- Texas Instruments documentation and code examples  
+- LCD segment mapping inspired by BOOSTXL-BATPAKMKII repo
