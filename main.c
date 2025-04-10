@@ -53,8 +53,53 @@
 
 #define ENABLE_PINS  0xFFFE
 #define BUTTON_DELAY    0xA000
-#define TEN_MS_COUNT  400
+#define TEN_MS_COUNT  100
 #define TIMER_SMCLK_SRC   0x0200
+
+void uart_init(void) {
+    // Unlock GPIO configuration
+    PM5CTL0 &= ~LOCKLPM5;
+
+    // Configure UART pins P3.4 (TX) and P3.5 (RX)
+    P3SEL0 |= BIT4 | BIT5;
+    P3SEL1 &= ~(BIT4 | BIT5);
+
+    // Configure clock system - using DCO at 8MHz
+    CSCTL0_H = CSKEY >> 8;        // Unlock clock registers
+    CSCTL1 = DCOFSEL_3 | DCORSEL; // Set DCO to 8MHz
+    CSCTL2 = SELA__VLOCLK | SELS__DCOCLK | SELM__DCOCLK;
+    CSCTL3 = DIVA__1 | DIVS__1 | DIVM__1;
+    CSCTL0_H = 0;                 // Lock clock registers
+
+    // Configure UART
+    UCA1CTLW0 = UCSWRST;          // Put eUSCI in reset
+    UCA1CTLW0 |= UCSSEL__SMCLK;   // Use SMCLK (8MHz)
+
+    // Baud rate calculation for 9600 baud:
+    UCA1BR0 = 52;                 // 8000000/9600/16 = 52.083
+    UCA1BR1 = 0x00;
+    UCA1MCTLW = UCOS16 | UCBRF_1 | 0x4900;  // UCBRFx=1, UCBRSx=0x49
+
+    // Clear reset to initialize UART
+    UCA1CTLW0 &= ~UCSWRST;
+
+    // Add delay to ensure UART is ready
+}
+
+void uartPrint(const char* str) {
+    while (*str) {
+        // Wait until TX buffer is ready
+        while (!(UCA1IFG & UCTXIFG));
+
+        // Send character
+        UCA1TXBUF = *str++;
+
+
+    }
+
+    // Ensure last character is transmitted
+    while (!(UCA1IFG & UCTXIFG));
+}
 
 
 void main (void)
@@ -85,6 +130,10 @@ void main (void)
     LCD_init();
     PM5CTL0 = ENABLE_PINS;
 
+    uart_init();
+    uartPrint("\r\nWELCOME TO THE GAME\r\n");
+
+
     // Set up Timer A0 for continuous mode using SMCLK
     TA0CTL   = TA0CTL | (TIMER_SMCLK_SRC + TIMER_CONTINUOUS);
     TA0CCTL0 = CCIE;
@@ -114,20 +163,20 @@ void main (void)
         // Begin main gameplay loop
         while(!gameOver)
         {
-            for(round=0; round<50; round=round+1)
+            for(round=0; round<16; round=round+1)
             {
                 P1OUT = P1OUT & RED_OFF;
                 P9OUT = P9OUT & GREEN_OFF;
-                delayCount = 50;
+                delayCount = 30;
                 while(delayCount = delay(delayCount));
 
                 if(!gameOver)
                 {
                     showText("LEVEL");
-                    delayCount = 50;
+                    delayCount = 30;
                     while(delayCount = delay(delayCount));
                     showNumber(round+1);
-                    delayCount = 50;
+                    delayCount = 30;
                     while(delayCount = delay(delayCount));
 
                     // Show and evaluate input
@@ -250,35 +299,51 @@ if (msgLength <= 6)
 }
 
 // This is how we are showing numbers on the levels
-void showNumber(unsigned long int number)
+void showNumber(unsigned long int value)
 {
-    void clearDisplay(void);  // Clear LCD before showing anything
+    // Function to clear all characters from the LC
+    void clearDisplay(void);
 
+    unsigned long int currentDigit;
+    int pos;
+    long int divisor  = 10000;
+    long int divisorNext  = 100000;
+    int skipLeadingZeros  = 1;
+
+    // Start with a blank screen
     clearDisplay();
 
-    number = number % 1000000;
-
-    char buffer[7];            // Buffer to hold up to 6 digits + null terminator
-    int numDigits = 0;
-
-    // Convert number to string manually
-    do {
-        buffer[numDigits++] = (number % 10) + '0';
-        number /= 10;
-    } while (number > 0 && numDigits < 6);
-
-    // Print characters in reverse order to LCD
-    int lcdPos = 6;
-    int i;
-
-    // Fill left side with spaces for padding
-    for (i = 0; i < 6 - numDigits; i++) {
-        LCD_showChar(' ', lcdPos--);
+    // Special case: if the number is 0, just show '0' on the far right
+    if (value == 0)
+    {
+        // Display '0' in the 6th (last) position
+        LCD_showChar('0', 6);
     }
+    else
+    {
+        // Loop through each LCD digit position from left to right (1 to 6)
+        for (pos = 1; pos <= 6; pos++)
+        {
+            if (pos == 1)
+            {
+                // For the first digit (leftmost), extract the hundred-thousands place
+                currentDigit = (value / 100000) + '0';
+            }
+            else
+            {
+                // Extract the next digit using division and modulo logic
+                currentDigit = (value / divisor) - ((value / divisorNext) * 10) + '0';
+                divisor /= 10;
+                divisorNext /= 10;
+            }
 
-    // Display number digits, right-aligned
-    for (i = numDigits - 1; i >= 0; i--) {
-        LCD_showChar(buffer[i], lcdPos--);
+            // Skip printing leading zeros
+            if (!((currentDigit == '0') && (skipLeadingZeros == 1)))
+            {
+                skipLeadingZeros = 0;
+                LCD_showChar(currentDigit, pos);
+            }
+        }
     }
 }
 
@@ -310,7 +375,7 @@ void showMultiWords(char msg[250])
         }
 
         // Wait after displaying the word
-        delayCount = 40;                // ~400ms delay between words
+        delayCount = 30;                // ~400ms delay between words
         while ((delayCount = delay(delayCount)));
 
         clearDisplay();
@@ -321,7 +386,7 @@ void showMultiWords(char msg[250])
     }
 
     // Final delay and cleanup
-    delayCount = 40;
+    delayCount = 30;
     while ((delayCount = delay(delayCount)));
     clearDisplay();
 }
