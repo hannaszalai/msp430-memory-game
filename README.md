@@ -6,7 +6,7 @@ An embedded memory game inspired by *Simon Says*, built using the MSP430FR6989 m
 Watch a short demo of the game in action:   
 [![Watch the video](https://img.youtube.com/vi/agX9S0J-z0U/0.jpg)](https://youtube.com/shorts/agX9S0J-z0U?si=qIFZzG6P21e_bzye)
 
-## 🧑‍💻 Authors
+## 🧑‍💻 Author
 Hanna Szalai  
 
 ## 🧠 Gameplay Overview
