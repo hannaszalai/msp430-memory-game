@@ -18,7 +18,7 @@ Players must memorize and replicate a growing sequence of red and green LED blin
 - LCD screen display (scrolling, number & word output)
 - Two-button input with debounce logic
 - Random pattern generation using hardware timer
-- Up to **50 rounds** of increasing difficulty
+- Up to **16 rounds** of increasing difficulty
 - Game over + score display
 
 ## 🛠 Built With
